@@ -2,6 +2,8 @@ package main
 
 import (
 	"REST-Api/internal/config"
+	"REST-Api/internal/lib/logger/sl"
+	"REST-Api/internal/storage/sqlite"
 	"log/slog"
 	"os"
 )
@@ -17,6 +19,13 @@ func main() {
 	log := SetupLogger(cfg.Env)
 	log.Info("Starting server", slog.String("env", cfg.Env))
 	log.Debug("debug messages are enabled")
+	storage, err := sqlite.New(cfg.StoragePath)
+	if err != nil {
+		log.Error("failed to init storage", sl.Err(err))
+		os.Exit(1)
+	}
+
+	_ = storage
 }
 
 func SetupLogger(env string) *slog.Logger {
